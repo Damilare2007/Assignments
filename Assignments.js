@@ -198,7 +198,18 @@ console.log("=============================");
 
 console.log("===== Assignment  8 =====");
 
+let studentScore = 79;
 
+if (studentScore >= 90){
+    console.log ("A")
+}else if (studentScore >= 80 ){
+    console.log ("B")
+}else if (studentScore >= 70 ){
+    console.log ("C")
+}else if (studentScore >= 60 ){
+    console.log ("D")
+}else   
+    {console.log ("F")}
 
 console.log("=============================");
 
@@ -217,7 +228,25 @@ console.log("=============================");
 
 console.log("===== Assignment  9 =====");
 
+let weekday = "Tuesday";
 
+switch (weekday) {
+    case "Monday":
+        console.log("Plan the week ahead.");
+        break;
+    case "Wednesday":
+        console.log("Mid-week review.");
+        break;
+    case "Friday":
+        console.log("Wrap up work for the week.");
+        break;
+    case "Saturday":case "Sunday":
+        console.log("Relax and recharge.");
+        break;
+    default:
+        console.log("Stay productive!");
+        break;
+}
 
 console.log("=============================");
 
@@ -234,11 +263,12 @@ console.log("=============================");
 
 console.log("===== Assignment  10 =====");
 
-let attendeesage = 18
-let isWithAdult = false
-let isBanned = false
+let attendeeage = 18;
+let isWithAdult = false;
+let isBanned = false;
+let hasTicket = true;
 
-if (attendeesage >= 18 || isWithAdult == true){
+if (hasTicket && !isBanned && (attendeeage >= 18 || isWithAdult == true)){
     console.log("Welcome to the event!")
 }else{
     console.log("Entry denied.")
