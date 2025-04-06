@@ -86,14 +86,7 @@ console.log("Grouped by department:", grouped);
   // Promote one employee
 emp3.promote("Management");
 console.log(emp3.getSummary());
-  
-
-
-
-
-
-
-
+console.log("=============================");
 
 /**
  * Create a Product object with:
@@ -110,6 +103,122 @@ console.log(emp3.getSummary());
  * 3. Create a ShoppingCart object that can add/remove products and calculate total
  * 4. Add a method to apply a coupon to all products in cart
  */
+// Step 1: Create the Product function (template for products)
+function Product(name, price, inventory) {
+  this.name = name;
+  this.price = price;
+  this.inventory = inventory;
+  this.discounts = [];
+
+  // Step 2: Add discount method
+  this.addDiscount = function(type, value) {
+    this.discounts.push({ type: type, value: value });
+  };
+
+  // Step 3: Calculate final price after all discounts
+  this.calculateFinalPrice = function() {
+    let finalPrice = this.price;
+    
+    // Apply percentage discounts first
+    for (let i = 0; i < this.discounts.length; i++) {
+      if (this.discounts[i].type === "percentage") {
+        finalPrice -= finalPrice * (this.discounts[i].value / 100);
+      }
+    }
+
+    // Apply fixed discounts
+    for (let i = 0; i < this.discounts.length; i++) {
+      if (this.discounts[i].type === "fixed") {
+        finalPrice -= this.discounts[i].value;
+      }
+    }
+
+    return finalPrice;
+  };
+
+  // Step 4: Restock method to increase inventory
+  this.restock = function(amount) {
+    this.inventory += amount;
+    return this.inventory;
+  };
+  
+  // Step 5: Static method to compare two products' prices
+  Product.comparePrices = function(productA, productB) {
+    if (productA.calculateFinalPrice() < productB.calculateFinalPrice()) {
+      return productA;
+    } else {
+      return productB;
+    }
+  };
+}
+
+// Step 6: Create 3 products
+let product1 = new Product("Shirt", 2000, 15);
+let product2 = new Product("Shoes", 5000, 8);
+let product3 = new Product("Bag", 3000, 25);
+
+// Add discounts to products
+product1.addDiscount("percentage", 10); // 10% off
+product2.addDiscount("fixed", 500);     // ₦500 off
+product3.addDiscount("percentage", 15); // 15% off
+
+// Step 7: Find products with inventory < 10
+function findLowStockProducts(products) {
+  let lowStock = [];
+  for (let i = 0; i < products.length; i++) {
+    if (products[i].inventory < 10) {
+      lowStock.push(products[i]);
+    }
+  }
+  return lowStock;
+}
+
+let allProducts = [product1, product2, product3];
+let lowStockProducts = findLowStockProducts(allProducts);
+console.log("Low stock products:", lowStockProducts);
+
+// Step 8: Create ShoppingCart object
+function ShoppingCart() {
+  this.products = [];
+  
+  // Add product to cart
+  this.addProduct = function(product) {
+    this.products.push(product);
+  };
+  
+  // Remove product from cart
+  this.removeProduct = function(productName) {
+    this.products = this.products.filter(p => p.name !== productName);
+  };
+  
+  // Calculate total price of all products in cart
+  this.calculateTotal = function() {
+    let total = 0;
+    for (let i = 0; i < this.products.length; i++) {
+      total += this.products[i].calculateFinalPrice();
+    }
+    return total;
+  };
+
+  // Apply coupon to all products
+  this.applyCoupon = function(discountValue) {
+    for (let i = 0; i < this.products.length; i++) {
+      this.products[i].addDiscount("fixed", discountValue);
+    }
+  };
+}
+
+// Step 9: Testing the ShoppingCart
+let cart = new ShoppingCart();
+cart.addProduct(product1);
+cart.addProduct(product2);
+
+console.log("Total price of cart:", cart.calculateTotal());
+
+// Apply a coupon
+cart.applyCoupon(200); // ₦200 off for each product
+console.log("Total price after coupon:", cart.calculateTotal());
+console.log("=============================");
 
 /**
  * Create a UserProfile object with:
@@ -126,3 +235,80 @@ console.log(emp3.getSummary());
  * 3. Create a function to find the most active user
  * 4. Add a method to detect potential fake accounts (based on activity patterns)
  */
+
+
+function UserProfile(username, isPrivate) {
+  this.username = username;
+  this.posts = [];
+  this.friends = [];
+  this.isPrivate = isPrivate;
+
+  this.addPost = function(content, type) {
+    this.posts.push({ content: content, type: type });
+  };
+
+  this.addFriend = function(friendProfile) {
+    this.friends.push(friendProfile);
+    friendProfile.friends.push(this);
+  };
+
+  this.generateFeed = function() {
+    if (this.isPrivate) {
+      return this.posts;
+    } else {
+      let allPosts = [];
+      for (let friend of this.friends) {
+        allPosts = allPosts.concat(friend.posts);
+      }
+      return allPosts.concat(this.posts);
+    }
+  };
+
+  this.analyzeActivity = function() {
+    return this.posts.length;
+  };
+}
+
+let user1 = new UserProfile("Alice", true);
+let user2 = new UserProfile("Bob", false);
+let user3 = new UserProfile("Charlie", true);
+let user4 = new UserProfile("David", false);
+let user5 = new UserProfile("Eve", false);
+
+user1.addFriend(user2);
+user2.addFriend(user3);
+user3.addFriend(user4);
+user4.addFriend(user5);
+
+user1.addPost("First post", "text");
+user2.addPost("Image post", "image");
+user3.addPost("Video post", "video");
+user4.addPost("Another post", "text");
+user5.addPost("Eve's post", "text");
+
+function searchProfiles(profiles, username) {
+  return profiles.filter(profile => profile.username.toLowerCase().includes(username.toLowerCase()));
+}
+
+let foundProfiles = searchProfiles([user1, user2, user3, user4, user5], "alice");
+console.log(foundProfiles);
+
+function findMostActiveUser(profiles) {
+  let mostActiveUser = profiles[0];
+  for (let i = 1; i < profiles.length; i++) {
+    if (profiles[i].analyzeActivity() > mostActiveUser.analyzeActivity()) {
+      mostActiveUser = profiles[i];
+    }
+  }
+  return mostActiveUser;
+}
+
+let mostActive = findMostActiveUser([user1, user2, user3, user4, user5]);
+console.log("Most Active User:", mostActive.username);
+
+function detectFakeAccounts(profiles) {
+  return profiles.filter(profile => profile.analyzeActivity() < 2);
+}
+
+let fakeAccounts = detectFakeAccounts([user1, user2, user3, user4, user5]);
+console.log("Potential Fake Accounts:", fakeAccounts.map(account => account.username));
